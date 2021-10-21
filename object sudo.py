@@ -15,6 +15,14 @@ class sudoku:
                 self.row_list[ j ].append( cloumn[ j ] )
                 self.block_list[ ( i//3 )*3 + j//3 ].append( cloumn[ j ] )
 
+    def dic_renew( self ):
+        self.Dic = {}
+        for i in range( 9 ):
+            for j in range( 9 ):
+                if self.cloumn_list[ i ][ j ] == 0:
+                    self.Dic[ i*9 + j ] = self.cloumn_list[ i ] + self.row_list[ j ] + self.block_list[ ( i//3 )*3 + j//3 ]
+                    self.Dic[ i*9 + j ] = list( set( self.check_numbers ) - set( self.Dic[ i*9 + j ] ) )
+    
     def can_be_solve( self ):
         more_num = False
         how_many_number = 0
@@ -48,7 +56,48 @@ class sudoku:
                     except:
                         continue
         return self.can_solve
-
+    
+    def simple_insert( self ):
+        for i in self.Dic.keys():
+            if len( self.Dic[ i ] ) == 1:
+                self.cloumn_list[ i//9 ][ i%9 ] = self.cloumn_list[ 0 ]
+                
+        self.dic_renew()
+    def complex_insert( self ): 
+        cloumn_test = []
+        row_test = []
+        block_test = []
+        
+        for key in self.Dic.keys():
+            for i in range( 9 ):
+                try:
+                    if key//9 + i == key:
+                        continue
+                    else:
+                        cloumn_test.append( self.Dic[ key//9 ][ i ] )
+                        cloumn_test = list( set( cloumn_test ) )
+                        
+                        row_test.append( self.Dic[ key%9 ][ i ] )
+                        row_test = list( set( row_test ) )
+                        
+                        block_test.sppend( self.Dic[ ( key//27 )*3 + ( key%9 )//3 ][ i ] )
+                        block_test = list( set( block_test ) )
+                except:
+                    continue
+            if len( set( self.Dic[ key ] ) - set( cloumn_test ) ) == 1:
+                self.cloumn_list[ key ]  = list( set( self.Dic[ key ] ) - set( cloumn_test ) )[ 0 ]
+                break
+            
+            elif len( set( self.Dic[ key ] ) - set( row_test ) ) == 1:
+                self.row_list[ key ]  = list( set( self.Dic[ key ] ) - set( row_test ) )[ 0 ]
+                break
+            
+            elif len( set( self.Dic[ key ] ) - set( block_test ) ) == 1:
+                self.block_list[ key ]  = list( set( self.Dic[ key ] ) - set( block_test ) )[ 0 ]
+            
+            self.dic_renew()
+            break
+            
 
 def main():
     S = sudoku( [[1, 2, 0, 0, 0, 0, 0, 0, 0],
@@ -65,5 +114,5 @@ def main():
     S.can_be_solve()
     print( len(S.Dic.keys()) )
 
-if __name__ == "__main__":
-    main()
+
+main()
