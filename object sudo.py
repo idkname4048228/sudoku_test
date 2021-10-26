@@ -4,6 +4,7 @@ class sudoku:
     
     def __init__( self, sudoku_list ):
         self.can_solve = False
+        self.had_insert = False
         self.Dic = {}
         
         self.cloumn_list = sudoku_list#橫
@@ -17,10 +18,12 @@ class sudoku:
 
     def dic_renew( self ):
         self.Dic = {}
+        
         for i in range( 9 ):
             for j in range( 9 ):
                 if self.cloumn_list[ i ][ j ] == 0:
                     self.Dic[ i*9 + j ] = self.cloumn_list[ i ] + self.row_list[ j ] + self.block_list[ ( i//3 )*3 + j//3 ]
+                    
                     self.Dic[ i*9 + j ] = list( set( self.check_numbers ) - set( self.Dic[ i*9 + j ] ) )
     
     def can_be_solve( self ):
@@ -60,15 +63,17 @@ class sudoku:
     def simple_insert( self ):
         for i in self.Dic.keys():
             if len( self.Dic[ i ] ) == 1:
-                self.cloumn_list[ i//9 ][ i%9 ] = self.cloumn_list[ 0 ]
+                self.cloumn_list[ i//9 ][ i%9 ] = self.Dic[ i ][ 0 ]
                 
         self.dic_renew()
-    def complex_insert( self ): 
-        cloumn_test = []
-        row_test = []
-        block_test = []
         
+    def complex_insert( self ):
+        self.had_insert = False
         for key in self.Dic.keys():
+            cloumn_test = []
+            row_test = []
+            block_test = []
+            
             for i in range( 9 ):
                 try:
                     if key//9 + i == key:
@@ -85,34 +90,53 @@ class sudoku:
                 except:
                     continue
             if len( set( self.Dic[ key ] ) - set( cloumn_test ) ) == 1:
-                self.cloumn_list[ key ]  = list( set( self.Dic[ key ] ) - set( cloumn_test ) )[ 0 ]
+                self.cloumn_list[ key//9 ][ i ]  = list( set( self.Dic[ key ] ) - set( cloumn_test ) )[ 0 ]
+                self.had_insert = True
+                self.dic_renew()
                 break
             
             elif len( set( self.Dic[ key ] ) - set( row_test ) ) == 1:
-                self.row_list[ key ]  = list( set( self.Dic[ key ] ) - set( row_test ) )[ 0 ]
+                self.row_list[ key%9 ][ i ] = list( set( self.Dic[ key ] ) - set( row_test ) )[ 0 ]
+                self.had_insert = True
+                self.dic_renew()
                 break
             
             elif len( set( self.Dic[ key ] ) - set( block_test ) ) == 1:
-                self.block_list[ key ]  = list( set( self.Dic[ key ] ) - set( block_test ) )[ 0 ]
+                self.block_list[ ( key//27 )*3 + ( key%9 )//3 ][ i ]  = list( set( self.Dic[ key ] ) - set( block_test ) )[ 0 ]
+                self.had_insert = True
+                self.dic_renew()
             
-            self.dic_renew()
+def fix( my_sudo : sudoku ):
+    while ( my_sudo.can_be_solve() ):
+        
+        my_sudo.simple_insert()
+        my_sudo.complex_insert()
+        
+        if my_sudo.had_insert :
+            
             break
-            
+    return my_sudo
 
 def main():
-    S = sudoku( [[1, 2, 0, 0, 0, 0, 0, 0, 0],
-                 [8, 0, 0, 0, 0, 0, 5, 0, 0],
-                 [0, 0, 6, 0, 0, 1, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 8, 0, 5],
-                 [4, 0, 0, 6, 0, 0, 0, 0, 0],
-                 [0, 5, 0, 0, 0, 0, 0, 3, 0],
-                 [0, 0, 7, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 7, 0, 0, 0, 0, 0],
-                 [0, 8, 0, 0, 0, 9, 0, 0, 4]
+    S = sudoku( [[5, 3, 0, 0, 7, 0, 0, 0, 0],
+                 [6, 0, 0, 1, 9, 5, 0, 0, 0],
+                 [0, 9, 8, 0, 0, 0, 0, 6, 0],
+                 [8, 0, 0, 0, 6, 0, 0, 0, 3],
+                 [4, 0, 0, 8, 0, 3, 0, 0, 1],
+                 [7, 0, 0, 0, 2, 0, 0, 0, 6],
+                 [0, 6, 0, 0, 0, 0, 2, 8, 0],
+                 [0, 0, 0, 4, 1, 9, 0, 0, 5],
+                 [0, 0, 0, 0, 8, 0, 0, 7, 9]
                  ])
 
     S.can_be_solve()
-    print( len(S.Dic.keys()) )
+    S = fix(S)
+    
+    print(S.can_be_solve())
+    for i in range( 9 ):
+        print( S.cloumn_list[ i ] )
+        
+    
 
 
 main()
