@@ -27,9 +27,7 @@ class sudoku:
                 if self.itself[ i ][ j ] == 0:
                     self.Dic[ i*9 + j ] = self.cloumn_list[ i ] + self.row_list[ j ] + self.block_list[ ( i//3 )*3 + j//3 ]
                     self.Dic[ i*9 + j ] = list( set( self.check_numbers ) - set( self.Dic[ i*9 + j ] ) )
-                    
-                    
-    
+
     def sudo_renew( self ):
         self.cloumn_list = [ [], [], [], [], [], [], [], [], [] ]#橫
         self.row_list = [ [], [], [], [], [], [], [], [], [] ]#直
@@ -39,7 +37,8 @@ class sudoku:
                 self.cloumn_list[ i ].append( cloumn[ j ] )
                 self.row_list[ j ].append( cloumn[ j ] )
                 self.block_list[ ( i//3 )*3 + j//3 ].append( cloumn[ j ] )
-    
+
+
     def can_be_solve( self ):
         more_num = False
         how_many_number = 0
@@ -73,8 +72,17 @@ class sudoku:
                             
                     except:
                         continue
+
         return self.can_solve
-    
+
+    def the_min_of_dic( self ):
+        min_number = 9
+        for key in self.Dic:
+            if len( self.Dic[ key ] ) < min_number:
+               min_number = len( self.Dic[ key ] )
+        return min_number
+
+
     def simple_insert( self ):
         for key in self.Dic.keys():
             if len( self.Dic[ key ] ) == 1:
@@ -82,8 +90,7 @@ class sudoku:
                 
         self.sudo_renew()
         self.dic_renew()
-        
-        
+
     def complex_insert( self ):
         self.had_insert = False
         for key in self.Dic.keys():
@@ -132,28 +139,28 @@ class sudoku:
                 self.sudo_renew()
                 self.dic_renew()
                 
-            
+
 def fix( my_sudo : sudoku ):
     while ( my_sudo.can_be_solve() ):
         
         my_sudo.simple_insert()
         my_sudo.complex_insert()
         
-        if not( my_sudo.had_insert ):
+        if ( not( my_sudo.had_insert ) and my_sudo.the_min_of_dic() > 1):
             break
         
     return my_sudo
 
 def main():
-    S = sudoku( [[8, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 3, 6, 0, 0, 0, 0, 0],
-                 [0, 7, 0, 0, 9, 0, 2, 0, 0],
-                 [0, 5, 0, 0, 0, 7, 0, 0, 0],
-                 [0, 0, 0, 0, 4, 5, 7, 0, 0],
-                 [0, 0, 0, 1, 0, 0, 0, 3, 0],
-                 [0, 0, 1, 0, 0, 0, 0, 6, 8],
-                 [0, 0, 8, 5, 0, 0, 0, 1, 0],
-                 [0, 9, 0, 0, 0, 0, 4, 0, 0]
+    S = sudoku( [[5, 3, 0, 0, 7, 0, 0, 0, 0],
+                 [6, 0, 0, 1, 9, 5, 0, 0, 0],
+                 [0, 9, 8, 0, 0, 0, 0, 6, 0],
+                 [8, 0, 0, 0, 6, 0, 0, 0, 3],
+                 [4, 0, 0, 8, 0, 3, 0, 0, 1],
+                 [7, 0, 0, 0, 2, 0, 0, 0, 6],
+                 [0, 6, 0, 0, 0, 0, 2, 8, 0],
+                 [0, 0, 0, 4, 1, 9, 0, 0, 5],
+                 [0, 0, 0, 0, 8, 0, 0, 7, 9]
                  ])
 
     S.can_be_solve()
@@ -163,6 +170,8 @@ def main():
     print(S.can_be_solve())
     for i in range( 9 ):
         print( S.itself[ i ] )
+    for i in S.Dic:
+        print(i, S.Dic[ i ])
         
     
         
