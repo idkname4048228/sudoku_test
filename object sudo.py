@@ -9,7 +9,7 @@ class sudoku:
         
         self.cloumn_list = sudoku_list#橫
         self.row_list = [ [], [], [], [], [], [], [], [], [] ]#直
-        self.block_list = [ [], [], [], [], [], [], [], [], [] ]#宮
+        self.block_list = [ [], [], [], [], [], [], [], [], [] ]#宮, ( key//27 )*3 + ( key%9 )//3 ][ ( ( key//9 )%3 )*3 + ( key%9 )%3
         
         for i, cloumn in enumerate( self.cloumn_list ):
             for j in range( 9 ):
@@ -22,6 +22,8 @@ class sudoku:
         for i in range( 9 ):
             for j in range( 9 ):
                 if self.cloumn_list[ i ][ j ] == 0:
+                    if ( i*9 + j )== 78:
+                        print(i, j, self.cloumn_list[ i ], self.row_list[ j ], self.block_list[ ( i//3 )*3 + j//3 ])
                     self.Dic[ i*9 + j ] = self.cloumn_list[ i ] + self.row_list[ j ] + self.block_list[ ( i//3 )*3 + j//3 ]
                     
                     self.Dic[ i*9 + j ] = list( set( self.check_numbers ) - set( self.Dic[ i*9 + j ] ) )
@@ -61,9 +63,9 @@ class sudoku:
         return self.can_solve
     
     def simple_insert( self ):
-        for i in self.Dic.keys():
-            if len( self.Dic[ i ] ) == 1:
-                self.cloumn_list[ i//9 ][ i%9 ] = self.Dic[ i ][ 0 ]
+        for key in self.Dic.keys():
+            if len( self.Dic[ key ] ) == 1:
+                self.cloumn_list[ key//9 ][ key%9 ] = self.Dic[ key ][ 0 ]
                 
         self.dic_renew()
         
@@ -90,19 +92,28 @@ class sudoku:
                 except:
                     continue
             if len( set( self.Dic[ key ] ) - set( cloumn_test ) ) == 1:
-                self.cloumn_list[ key//9 ][ i ]  = list( set( self.Dic[ key ] ) - set( cloumn_test ) )[ 0 ]
+                self.cloumn_list[ key//9 ][ key%9 ]  = list( set( self.Dic[ key ] ) - set( cloumn_test ) )[ 0 ]
+                self.row_list[ key%9 ][ key//9 ] = list( set( self.Dic[ key ] ) - set( cloumn_test ) )[ 0 ]
+                self.block_list[ ( key//27 )*3 + ( key%9 )//3 ][ ( ( key//9 )%3 )*3 + ( key%9 )%3 ] = list( set( self.Dic[ key ] ) - set( cloumn_test ) )[ 0 ]
+                
                 self.had_insert = True
                 self.dic_renew()
                 break
             
             elif len( set( self.Dic[ key ] ) - set( row_test ) ) == 1:
-                self.row_list[ key%9 ][ i ] = list( set( self.Dic[ key ] ) - set( row_test ) )[ 0 ]
+                self.cloumn_list[ key//9 ][ key%9 ] = list( set( self.Dic[ key ] ) - set( row_test ) )[ 0 ]
+                self.row_list[ key%9 ][ key//9 ] = list( set( self.Dic[ key ] ) - set( row_test ) )[ 0 ]
+                self.block_list[ ( key//27 )*3 + ( key%9 )//3 ][ ( ( key//9 )%3 )*3 + ( key%9 )%3 ] = list( set( self.Dic[ key ] ) - set( row_test ) )[ 0 ]
+                
                 self.had_insert = True
                 self.dic_renew()
                 break
             
             elif len( set( self.Dic[ key ] ) - set( block_test ) ) == 1:
-                self.block_list[ ( key//27 )*3 + ( key%9 )//3 ][ i ]  = list( set( self.Dic[ key ] ) - set( block_test ) )[ 0 ]
+                self.cloumn_list[ key//9 ][ key%9 ]  = list( set( self.Dic[ key ] ) - set( block_test ) )[ 0 ]
+                self.row_list[ key%9 ][ key//9 ] = list( set( self.Dic[ key ] ) - set( block_test ) )[ 0 ]
+                self.block_list[ ( key//27 )*3 + ( key%9 )//3 ][ ( ( key//9 )%3 )*3 + ( key%9 )%3 ] = list( set( self.Dic[ key ] ) - set( block_test ) )[ 0 ]
+                
                 self.had_insert = True
                 self.dic_renew()
             
@@ -112,7 +123,7 @@ def fix( my_sudo : sudoku ):
         my_sudo.simple_insert()
         my_sudo.complex_insert()
         
-        if my_sudo.had_insert :
+        if not( my_sudo.had_insert ):
             
             break
     return my_sudo
@@ -130,6 +141,7 @@ def main():
                  ])
 
     S.can_be_solve()
+    
     S = fix(S)
     
     print(S.can_be_solve())
@@ -137,6 +149,6 @@ def main():
         print( S.cloumn_list[ i ] )
         
     
-
-
+        
+    
 main()
