@@ -26,8 +26,9 @@ class sudoku:
             for j in range( 9 ):
                 if self.itself[ i ][ j ] == 0:
                     self.Dic[ i*9 + j ] = self.cloumn_list[ i ] + self.row_list[ j ] + self.block_list[ ( i//3 )*3 + j//3 ]
-                    
                     self.Dic[ i*9 + j ] = list( set( self.check_numbers ) - set( self.Dic[ i*9 + j ] ) )
+                    
+                    
     
     def sudo_renew( self ):
         self.cloumn_list = [ [], [], [], [], [], [], [], [], [] ]#橫
@@ -69,6 +70,7 @@ class sudoku:
                             
                             self.Dic[ i*9 + j ] = self.cloumn_list[ i ] + self.row_list[ j ] + self.block_list[ ( i//3 )*3 + j//3 ]
                             self.Dic[ i*9 + j ] = list( set( self.check_numbers ) - set( self.Dic[ i*9 + j ] ) )
+                            
                     except:
                         continue
         return self.can_solve
@@ -91,19 +93,21 @@ class sudoku:
             
             for i in range( 9 ):
                 try:
-                    if key//9 + i == key:
+                    if ( key//9 )*9 + i == key:
                         continue
                     else:
-                        cloumn_test.append( self.Dic[ key//9 ][ i ] )
-                        cloumn_test = list( set( cloumn_test ) )
+                        cloumn_test.extend( self.Dic[ key ] )
                         
-                        row_test.append( self.Dic[ key%9 ][ i ] )
-                        row_test = list( set( row_test ) )
+                        row_test.extend( self.Dic[ key ] )
                         
-                        block_test.sppend( self.Dic[ ( key//27 )*3 + ( key%9 )//3 ][ i ] )
-                        block_test = list( set( block_test ) )
+                        block_test.extend( self.Dic[ key ] )
+                        
                 except:
                     continue
+            cloumn_test = list( set( cloumn_test ) )
+            row_test = list( set( row_test ) )
+            block_test = list( set( block_test ) )
+            
             if len( set( self.Dic[ key ] ) - set( cloumn_test ) ) == 1:
                 self.itself[ key//9 ][ key%9 ]  = list( set( self.Dic[ key ] ) - set( cloumn_test ) )[ 0 ]
                 
@@ -136,21 +140,20 @@ def fix( my_sudo : sudoku ):
         my_sudo.complex_insert()
         
         if not( my_sudo.had_insert ):
-            
             break
-    print(my_sudo.itself)
+        
     return my_sudo
 
 def main():
-    S = sudoku( [[5, 3, 0, 0, 7, 0, 0, 0, 0],
-                 [6, 0, 0, 1, 9, 5, 0, 0, 0],
-                 [0, 9, 8, 0, 0, 0, 0, 6, 0],
-                 [8, 0, 0, 0, 6, 0, 0, 0, 3],
-                 [4, 0, 0, 8, 0, 3, 0, 0, 1],
-                 [7, 0, 0, 0, 2, 0, 0, 0, 6],
-                 [0, 6, 0, 0, 0, 0, 2, 8, 0],
-                 [0, 0, 0, 4, 1, 9, 0, 0, 5],
-                 [0, 0, 0, 0, 8, 0, 0, 7, 9]
+    S = sudoku( [[8, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 3, 6, 0, 0, 0, 0, 0],
+                 [0, 7, 0, 0, 9, 0, 2, 0, 0],
+                 [0, 5, 0, 0, 0, 7, 0, 0, 0],
+                 [0, 0, 0, 0, 4, 5, 7, 0, 0],
+                 [0, 0, 0, 1, 0, 0, 0, 3, 0],
+                 [0, 0, 1, 0, 0, 0, 0, 6, 8],
+                 [0, 0, 8, 5, 0, 0, 0, 1, 0],
+                 [0, 9, 0, 0, 0, 0, 4, 0, 0]
                  ])
 
     S.can_be_solve()
