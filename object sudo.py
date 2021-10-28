@@ -6,7 +6,7 @@ class sudoku:
         self.can_solve = False
         self.had_insert = False
         self.Dic = {}
-        
+        self.the_possible_place = 0
         
         self.itself = sudoku_list
         self.cloumn_list = [ [], [], [], [], [], [], [], [], [] ]#橫
@@ -41,12 +41,15 @@ class sudoku:
 
     def can_be_solve( self ):
         more_num = False
-        how_many_number = 0
+        the_amount_of_numbers = 0
+        the_amount_of_zeroes = 0
+        
         for i in range( 9 ):#數數字多少
             for j in range( 9 ):
                 if self.itself[ i ][ j ] != 0:
-                    how_many_number = how_many_number + 1
+                    the_amount_of_numbers = the_amount_of_numbers + 1
                 else:#順便建字典
+                    the_amount_of_zeroes = the_amount_of_zeroes + 1
                     self.Dic[ i*9 + j ] = []
                         
         while more_num == False:#數字重複?
@@ -58,7 +61,10 @@ class sudoku:
                         more_num = True
             break
 
-        if how_many_number >= 17 and more_num == False:
+        if the_amount_of_numbers >= 17 and more_num == False and the_amount_of_zeroes >= 1:
+            for i in range( 9 ):
+                print( self.itself [ i ])
+            print( the_amount_of_zeroes )
             self.can_solve = True
             
         if self.can_solve:#可解就執行
@@ -80,6 +86,7 @@ class sudoku:
         for key in self.Dic:
             if len( self.Dic[ key ] ) < min_number:
                min_number = len( self.Dic[ key ] )
+               self.the_possible_place = key
         return min_number
 
 
@@ -152,26 +159,26 @@ def fix( my_sudo : sudoku ):
     return my_sudo
 
 def main():
-    S = sudoku( [[5, 3, 0, 0, 7, 0, 0, 0, 0],
-                 [6, 0, 0, 1, 9, 5, 0, 0, 0],
-                 [0, 9, 8, 0, 0, 0, 0, 6, 0],
-                 [8, 0, 0, 0, 6, 0, 0, 0, 3],
-                 [4, 0, 0, 8, 0, 3, 0, 0, 1],
-                 [7, 0, 0, 0, 2, 0, 0, 0, 6],
-                 [0, 6, 0, 0, 0, 0, 2, 8, 0],
-                 [0, 0, 0, 4, 1, 9, 0, 0, 5],
-                 [0, 0, 0, 0, 8, 0, 0, 7, 9]
-                 ])
+    my_sudo = sudoku( [[5, 3, 0, 0, 7, 0, 0, 0, 0],
+                       [6, 0, 0, 1, 9, 5, 0, 0, 0],
+                       [0, 9, 8, 0, 0, 0, 0, 6, 0],
+                       [8, 0, 0, 0, 6, 0, 0, 0, 3],
+                       [4, 0, 0, 8, 0, 3, 0, 0, 1],
+                       [7, 0, 0, 0, 2, 0, 0, 0, 6],
+                       [0, 6, 0, 0, 0, 0, 2, 8, 0],
+                       [0, 0, 0, 4, 1, 9, 0, 0, 5],
+                       [0, 0, 0, 0, 8, 0, 0, 7, 9]
+                       ])
 
-    S.can_be_solve()
+    my_sudo.can_be_solve()
     
-    S = fix(S)
+    my_sudo = fix(my_sudo)
     
-    print(S.can_be_solve())
+    print(my_sudo.can_be_solve())
     for i in range( 9 ):
-        print( S.itself[ i ] )
-    for i in S.Dic:
-        print(i, S.Dic[ i ])
+        print( my_sudo.itself[ i ] )
+    for i in my_sudo.Dic:
+        print(i, my_sudo.Dic[ i ])
         
     
         
