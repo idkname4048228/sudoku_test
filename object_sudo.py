@@ -134,24 +134,17 @@ class sudoku:
             
             if len( cloumn_test ) == 1:
                 self.itself[ key//9 ][ key%9 ]  = cloumn_test[ 0 ]
-                
                 self.had_insert = True
-                self.sudo_renew()
-                self.dic_renew()
             
             elif len( row_test ) == 1:
                 self.itself[ key//9 ][ key%9 ]  = row_test[ 0 ]
-                
                 self.had_insert = True
-                self.sudo_renew()
-                self.dic_renew()
             
             elif len( block_test ) == 1:
                 self.itself[ key//9 ][ key%9 ]  = block_test[ 0 ]
-                
                 self.had_insert = True
-                self.sudo_renew()
-                self.dic_renew()
+        self.sudo_renew()
+        self.dic_renew()
 
 
 def print_sudo_which_is( my_sudo : sudoku ):  #把數獨print出來
