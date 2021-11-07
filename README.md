@@ -1,2 +1,0 @@
-"# sudoku" 
-# sudoku

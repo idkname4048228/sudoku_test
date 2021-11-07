@@ -12,20 +12,21 @@ class sudoku:
         self.need_solve = True  #數獨需不需要解
         self.had_insert = False  #數獨是否有新增數字
         self.Dic = {}  #數獨每一個空格所能放的數字
-        self.the_possible_place = -1  #
+        self.the_possible_place = -1  #數獨裡選擇最少的格子
         
-        self.itself = sudoku_list
+        self.itself = sudoku_list  #數獨本身( 主要拿來更改 )
+        #下面三個變數都是拿來判斷可放數自
         self.cloumn_list = [ [], [], [], [], [], [], [], [], [] ]#橫
         self.row_list = [ [], [], [], [], [], [], [], [], [] ]#直
         self.block_list = [ [], [], [], [], [], [], [], [], [] ]#宮, ( key//27 )*3 + ( key%9 )//3 ][ ( ( key//9 )%3 )*3 + ( key%9 )%3
         
-        for i, cloumn in enumerate( self.itself ):
+        for i, cloumn in enumerate( self.itself ):  #初始時，把數獨本體更新到其他的變數
             for j in range( 9 ):
                 self.cloumn_list[ i ].append( cloumn[ j ] )
                 self.row_list[ j ].append( cloumn[ j ] )
                 self.block_list[ ( i//3 )*3 + j//3 ].append( cloumn[ j ] )
 
-    def dic_renew( self ):
+    def dic_renew( self ):  #字典更新，每當有一個數字填入時，就更新一次
         self.Dic = {}
         
         for i in range( 9 ):
@@ -34,7 +35,7 @@ class sudoku:
                     self.Dic[ i*9 + j ] = self.cloumn_list[ i ] + self.row_list[ j ] + self.block_list[ ( i//3 )*3 + j//3 ]
                     self.Dic[ i*9 + j ] = list( set( self.check_numbers ) - set( self.Dic[ i*9 + j ] ) )
 
-    def sudo_renew( self ):
+    def sudo_renew( self ):  #數獨更新，每當有新的數字填入時，拿來判斷的變數要更新
         self.cloumn_list = [ [], [], [], [], [], [], [], [], [] ]#橫
         self.row_list = [ [], [], [], [], [], [], [], [], [] ]#直
         self.block_list = [ [], [], [], [], [], [], [], [], [] ]#宮
@@ -45,7 +46,7 @@ class sudoku:
                 self.block_list[ ( i//3 )*3 + j//3 ].append( cloumn[ j ] )
 
 
-    def need_to_solve( self ):
+    def need_to_solve( self ):  #更改數獨需不需要解的方法，需要解回傳True，不需要則回傳False
         self.need_solve = True
         the_amount_of_zeroes = 0
         
@@ -59,7 +60,7 @@ class sudoku:
             
         return self.need_solve
 
-    def can_be_solve( self ):
+    def can_be_solve( self ):  #看數獨能不能解，初始填的數字超過17個才有唯一解。如果填滿，就不需要解。如果初始數字有重複，不需要解
         self.can_solve = False
         more_num = False
         the_amount_of_numbers = 0
@@ -90,7 +91,7 @@ class sudoku:
         
         return self.can_solve
 
-    def the_min_of_dic( self ):
+    def the_min_of_dic( self ):  #數獨字典裡最少的可放數字有幾個，會順便更改the_possible_place
         min_number = 9
         for key in self.Dic:
             if len( self.Dic[ key ] ) < min_number:
@@ -99,7 +100,7 @@ class sudoku:
         return min_number
 
 
-    def simple_insert( self ):
+    def simple_insert( self ):  #最簡單的填入，如果可放數列只有一個數字，填入
         for key in self.Dic.keys():
             if len( self.Dic[ key ] ) == 1:
                 self.itself[ key//9 ][ key%9 ] = self.Dic[ key ][ 0 ]
@@ -107,7 +108,7 @@ class sudoku:
         self.sudo_renew()
         self.dic_renew()
 
-    def complex_insert( self ):
+    def complex_insert( self ):  #較複雜的填入，判斷附近是否只有某一格可以填某個數字
         self.had_insert = False
         for key in self.Dic.keys():
             cloumn_test = []
@@ -153,12 +154,12 @@ class sudoku:
                 self.dic_renew()
 
 
-def print_sudo_which_is( my_sudo : sudoku ):
+def print_sudo_which_is( my_sudo : sudoku ):  #把數獨print出來
     for i in my_sudo.itself:
         print( i )
 
 
-def fix( my_sudo : sudoku ):
+def fix( my_sudo : sudoku ):  #重複簡單和複雜填入，直到複雜填入沒有再填新的數字，以及最短可放數列長度大於1
     while ( my_sudo.can_be_solve() ):
         my_sudo.simple_insert()
         my_sudo.complex_insert()
@@ -168,7 +169,7 @@ def fix( my_sudo : sudoku ):
     
     return my_sudo
 
-def assume_number_from( my_sudo : sudoku ):
+def assume_number_from( my_sudo : sudoku ):  #假設the_possible_place的第一項是答案，填入，並開始解，如果不是，則下一個，全部都不是，回傳無解
     global answer_of_my_sudo
     
     my_sudo.sudo_renew()
